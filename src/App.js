@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Teacherlogin from './Components/Teacherlogin'; 
+import Teacheregister from './Components/Teacheregister'; 
+import Studentlogin from './Components/Studentlogin'; 
+import Studentregister from './Components/Studentregister'; 
+import Home from './Components/Home'; 
+import TeacherDashboard from './Components/Teacherdashboard';
+import StudentDashboard from './Components/Studentdashboard';
+
+import { useEffect } from 'react';
+import io from 'socket.io-client';
 
 function App() {
+  const socket = io('http://localhost:5000');
+  useEffect(() => {
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/teacherlogin" element={<Teacherlogin />} />
+          <Route path="/teacheregister" element={<Teacheregister />} />
+          <Route path="/studentlogin" element={<Studentlogin />} />
+          <Route path="/studentregister" element={<Studentregister />} />
+          <Route path="/Teacherdashboard" element={<TeacherDashboard />} />
+          <Route path="/studentdashboard" element={<StudentDashboard />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
