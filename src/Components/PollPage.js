@@ -7,6 +7,7 @@ export default function PollPage() {
     const [poll, setPoll] = useState(null);
     const [percentages, setPercentages] = useState([]);
     const [showColumns, setShowColumns] = useState(false);
+    const [votesData, setVotesData] = useState({});
 
     // Fetch poll data
     useEffect(() => {
@@ -24,6 +25,45 @@ export default function PollPage() {
             }
         };
         fetchPollData();
+    }, [pollId]);
+
+    // Fetch votes data for each option
+    useEffect(() => {
+        const fetchVotesData = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/pollResponses/${pollId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch votes data');
+                }
+                const data = await response.json();
+                // Format the votes data
+                const formattedData = {};
+                Object.keys(data.data.userVotes).forEach(option => {
+                    formattedData[option] = data.data.userVotes[option];
+                });
+    
+                // Fetch user names based on user IDs
+                const updatedFormattedData = {};
+                for (const option in formattedData) {
+                    const userIds = formattedData[option];
+                    const userNames = await Promise.all(userIds.map(async userId => {
+                        const userResponse = await fetch(`http://localhost:5000/api/studentauth/getusername/${userId}`);
+                        if (userResponse.ok) {
+                            const userData = await userResponse.json();
+                            return userData.username;
+                        }
+                        return null;
+                    }));
+                    updatedFormattedData[option] = userNames;
+                }
+    
+                console.log("Updated formatted data:", updatedFormattedData); // Check the updatedFormattedData
+                setVotesData(updatedFormattedData);
+            } catch (error) {
+                console.error('Error fetching votes data:', error);
+            }
+        };
+        fetchVotesData();
     }, [pollId]);
 
     // Fetch poll percentages
@@ -98,6 +138,7 @@ export default function PollPage() {
     // Function to handle the "Visualise" button click
     const handleVisualiseClick = () => {
         setShowColumns(true);
+        console.log(votesData)
     };
 
     return (
@@ -129,11 +170,17 @@ export default function PollPage() {
                     <h2 style={{ textAlign: 'center' }}>Poll Breakdown</h2>
                     <div className="d-flex justify-content-between">
                         {poll && poll.options.map((option, index) => (
-                            <div key={index} style={{ width: `${100 / poll.options.length}%`, textAlign: 'center' }}>{option}</div>
+                            <div key={index} style={{ width: `${100 / poll.options.length}%`, textAlign: 'center' }}>{option}
+                                <ul>
+                                    {votesData[option] && votesData[option].map((userId, idx) => (
+                                        <li key={idx}>{userId}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         ))}
                     </div>
                 </div>
-            )}
+            )}  
         </div>
     );
 }
