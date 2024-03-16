@@ -2,7 +2,6 @@ const express = require('express');
 const User = require('../models/Teacher');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-var jwt = require('jsonwebtoken');
 var fetchuser = require('../middleware/fetchUser');
 
 const JWT_SECRET = 'Harryisagoodb$oy';
@@ -37,11 +36,9 @@ router.post('/createuser', [
         id: user.id
       }
     }
-    const authtoken = jwt.sign(data, JWT_SECRET);
-
 
     // res.json(user)
-    res.json({ authtoken })
+    res.json({ data })
 
   } catch (error) {
     console.error(error.message);
@@ -81,9 +78,8 @@ router.post('/login', [
         id: user.id
       }
     }
-    const authtoken = jwt.sign(data, JWT_SECRET);
     success = true;
-    res.json({ success, authtoken })
+    res.json({ success, data })
 
   } catch (error) {
     console.error(error.message);

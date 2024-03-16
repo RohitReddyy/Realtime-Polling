@@ -4,6 +4,7 @@ export default function CreatePoll({ onCreatePoll }) {
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '']);
   const formRef = useRef(null);
+  const userId = localStorage.getItem('userId');
 
   const handleOptionChange = (index, value) => {
     const newOptions = [...options];
@@ -22,9 +23,11 @@ export default function CreatePoll({ onCreatePoll }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(userId)
     const pollData = {
       question,
-      options: options.filter(option => option.trim() !== '')
+      options: options.filter(option => option.trim() !== ''),
+      userId: userId
     };
 
     try {

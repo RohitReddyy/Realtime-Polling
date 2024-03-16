@@ -22,6 +22,7 @@ function App() {
 
         if (json.success) {
             localStorage.setItem('token', json.authtoken);
+            localStorage.setItem('userId', json.data.user.id);
             window.location.href = '/Teacherdashboard';
             alert("success")
         } else {

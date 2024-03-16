@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PollHistory = () => {
-  // State to store the list of previous polls
   const [polls, setPolls] = useState([]);
-
-  // Function to fetch the list of previous polls from the server
+  const [selectedPollId, setSelectedPollId] = useState(null); // To store the ID of the selected poll
+  const userId = localStorage.getItem('userId');
+  const navigate = useNavigate();
+  
   const fetchPollHistory = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/polls');
+      const response = await fetch(`http://localhost:5000/api/polls/history/${userId}`);
       if (response.ok) {
         const data = await response.json();
-        setPolls(data.polls);
+        setPolls(data.userPolls); 
       } else {
         console.error('Failed to fetch poll history');
       }
@@ -19,24 +21,64 @@ const PollHistory = () => {
     }
   };
 
-  // Fetch the poll history when the component mounts
+  const fetchPollPercentages = async (pollId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/pollResponses/${pollId}`);
+      if (response.ok) {
+        const data = await response.json();
+        // Update the state with the selected poll ID and its percentages
+        setSelectedPollId(pollId);
+        setPolls(prevPolls => prevPolls.map(poll => poll._id === pollId ? {...poll, percentages: data.percentages} : poll));
+      } else {
+        console.error('Failed to fetch poll percentages');
+      }
+    } catch (error) {
+      console.error('Error fetching poll percentages:', error);
+    }
+  };
+
   useEffect(() => {
     fetchPollHistory();
   }, []);
 
+  const handlePollClick = (pollId) => {
+    // Redirect to a new page with the poll statistics
+    navigate(`/poll/${pollId}`);
+  };
+
   return (
     <div>
-      <h2>Poll History</h2>
+      <h2 className="mb-4">Poll History</h2>
       {polls.length === 0 ? (
         <p>No previous polls available.</p>
       ) : (
-        <ul>
+        <div className="row row-cols-1">
           {polls.map((poll) => (
-            <li key={poll._id}>
-              <strong>{poll.question}</strong>
-            </li>
+            <div className="col mb-4" key={poll._id}>
+              <div className="card w-100">
+                <div className="card-body" style={{ cursor: "pointer" }} onClick={() => handlePollClick(poll._id)}>
+                  <h5 className="card-title">{poll.question}</h5>
+                  <ul className="list-group">
+                    {poll.options?.map((option, index) => (
+                      <li 
+                        key={index} 
+                        className="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        <div>
+                          {option}
+                          {/* Display the percentage if the poll ID matches the selected poll ID */}
+                          {selectedPollId === poll._id && <span className="badge badge-light ml-2">{poll.percentages?.[option]}%</span>}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  {/* Pass the poll ID to fetchPollPercentages */}
+                  <button className="btn btn-primary btn-sm" onClick={(e) => { e.stopPropagation(); fetchPollPercentages(poll._id) }} style={{ marginTop: "4px" }}>View Percentages</button>
+                </div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

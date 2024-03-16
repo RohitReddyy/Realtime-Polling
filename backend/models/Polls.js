@@ -8,6 +8,10 @@ const pollSchema = new mongoose.Schema({
   options: {
     type: [String],
     required: true
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   }
 });
 
