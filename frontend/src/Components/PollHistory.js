@@ -114,6 +114,7 @@ const PollHistory = () => {
                   </ul>
                   {/* Pass the poll ID to fetchPollPercentages */}
                   <button className="btn btn-primary btn-sm" onClick={() => {reopenPolling(poll._id) }} style={{ marginTop: "9px", marginBottom: "-8px" }}>Reopen Poll</button>
+                  <button className="btn btn-success btn-sm" onClick={() => {handlePollClick(poll._id) }} style={{ marginTop: "9px", marginBottom: "-8px" }}>View Result</button>
                   <button className="btn btn-danger btn-sm" onClick={() => {deletePoll(poll._id) }} style={{ marginTop: "9px", marginBottom: "-8px" }}>Delete Poll</button>
                 </div>
               </div>

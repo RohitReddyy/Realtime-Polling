@@ -97,6 +97,7 @@ const PollResults = () => {
                   </ul>
                   {/* Pass the poll ID to fetchPollPercentages */}
                   <button className="btn btn-primary btn-sm" onClick={() => {endPolling(poll._id) }} style={{ marginTop: "9px", marginBottom: "-8px" }}>End Polling</button>
+                  <button className="btn btn-success btn-sm" onClick={() => {handlePollClick(poll._id) }} style={{ marginTop: "9px", marginBottom: "-8px" }}>View Result</button>
                 </div>
               </div>
             </div>
