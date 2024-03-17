@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Chart from 'chart.js/auto';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+
 
 export default function PollPage() {
     const { pollId } = useParams();
@@ -144,42 +147,47 @@ export default function PollPage() {
     return (
         <div>
             <div>
-                <h1>Poll Page</h1>
-                <p>Poll ID: {pollId}</p>
+                <h1 className="mb-4 text-center">Poll Page</h1>
                 {poll && (
-                    <>
-                        <h2>Poll Question: {poll.question}</h2>
-                        <h3>Poll Options:</h3>
-                        <ul>
-                            {poll.options.map((option, index) => (
-                                <li key={index}>{option}</li>
-                            ))}
-                        </ul>
-                    </>
+                    <div className="card">
+                        <div className="card-body" style={{width: "50%", height: "340px"}}>
+                            <h2 className="card-title">Poll Question:</h2>
+                            <p className="card-text">{poll.question}</p>
+                            <h3 className="card-subtitle mb-2 mt-4">Poll Options:</h3>
+                            <ul className="list-group">
+                                {poll.options.map((option, index) => (
+                                    <li key={index} className="list-group-item">{option}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
                 )}
-                <button className='btn btn-primary mt-3' onClick={handleVisualiseClick} style={{position: "absolute", right: "20%", top: "65%"}}>Visualise</button>
             </div>
+                <button className='btn btn-primary mt-3' onClick={handleVisualiseClick} style={{position: "absolute", right: "20%", top: "78%"}}>Visualise</button>
             <div style={{ flex: 1 }}>
                 <div style={{ position: 'absolute', right: '0', top: '0', width: '50%' }}>
-                    <h2>Percentage Bar Graph</h2>
-                    <canvas id="barChart"></canvas>
+                    
+                    <canvas id="barChart" style={{marginTop: "90px"}}></canvas>
                 </div>
             </div>
             {showColumns && (
-                <div style={{ marginTop: "170px" }}>
-                    <h2 style={{ textAlign: 'center' }}>Poll Breakdown</h2>
-                    <div className="d-flex justify-content-between">
-                        {poll && poll.options.map((option, index) => (
-                            <div key={index} style={{ width: `${100 / poll.options.length}%`, textAlign: 'center' }}>{option}
-                                <ul>
-                                    {votesData[option] && votesData[option].map((userId, idx) => (
-                                        <li key={idx}>{userId}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                 <div className="row mt-8">
+                 <div className="col" style={{ marginTop: "100px" }}>
+                     <h2 className="text-center">Poll Breakdown</h2>
+                     <div className="row">
+                         {poll && poll.options.map((option, index) => (
+                             <div key={index} className={`col-md-${Math.floor(12 / poll.options.length)} text-center`}>
+                                 <h4>{option}</h4>
+                                 <ul className="list-group">
+                                     {votesData[option] && votesData[option].map((userName, idx) => (
+                                         <li key={idx} className="list-group-item">{userName}</li>
+                                     ))}
+                                 </ul>
+                             </div>
+                         ))}
+                     </div>
+                 </div>
+             </div>
             )}  
         </div>
     );

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
@@ -8,6 +9,7 @@ const StudentDashboard = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedPollId, setSelectedPollId] = useState(null);
   const [pollResults, setPollResults] = useState(null);
+  const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
@@ -64,14 +66,7 @@ const StudentDashboard = () => {
 
   const viewResults = async (pollId) => {
     try {
-      alert("hi")
-      const response = await fetch(`http://localhost:5000/api/pollResponses/${pollId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setPollResults(data.data);
-      } else {
-        console.error('Failed to fetch poll results');
-      }
+        navigate(`/comment/${pollId}`);
     } catch (error) {
       console.error('Error fetching poll results:', error);
     }
@@ -89,7 +84,7 @@ const StudentDashboard = () => {
             <div className="mx-0 mx-sm-auto">
               {polls.map((poll) => (
                 <div key={poll._id} className="card mb-3">
-                  <div className="card-body">
+                  <div className="card-body" onClick={() => viewResults(poll._id)}>
                     <div className="text-center">
                       <i className="far fa-file-alt fa-4x mb-3 text-primary"></i>
                       <p>
@@ -101,23 +96,27 @@ const StudentDashboard = () => {
   
                     <form className="px-4">
                       {poll.options.map((option, idx) => (
-                        <div key={idx} className="form-check mb-2">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name={`poll-${poll._id}`}
-                            id={`radio2Example${idx + 1}`}
-                            value={option}
-                            onChange={() => setSelectedOption(option)}
-                            checked={selectedOption === option}
-                          />
-                          <label className="form-check-label" htmlFor={`radio2Example${idx + 1}`}>
-                            {option}
-                            {pollResults && pollResults.percentages[option] && ( // Check if poll results are available and percentages exist for this option
-                              <span className="ms-2">({pollResults.percentages[option]}%)</span>
-                            )}
-                          </label>
-                        </div>
+                        <div key={idx} className="custom-radio">
+                        <input
+                          className="custom-radio-input"
+                          type="radio"
+                          name={`poll-${poll._id}-${idx}`} 
+                          id={`radio${poll._id}-${idx + 1}`} 
+                          value={option}
+                          onChange={() => setSelectedOption(option)}
+                          checked={selectedOption === option}
+                        />
+                        <label className="custom-radio-label" htmlFor={`radio${poll._id}-${idx + 1}`}>{/* Update the htmlFor attribute */}
+                          <div className="custom-radio-button"></div>
+                          <span className="custom-radio-option">{option}</span>
+                          {pollResults && pollResults.percentages[option] && (
+                            <span className="custom-radio-percent">({pollResults.percentages[option]}%)</span>
+                          )}
+                        </label>
+                      </div>
+                      
+                      
+                      
                       ))}
                     </form>
                   </div>
@@ -143,7 +142,7 @@ const StudentDashboard = () => {
                       onClick={() => viewResults(poll._id)}
                       disabled={selectedPollId === poll._id}
                     >
-                      View Results
+                      Comment
                     </button>
                   </div>
                 </div>

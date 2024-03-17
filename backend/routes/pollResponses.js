@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const PollResponse = require('../models/PollResponse'); // Assuming you have a PollResponse model
 
 // Route to handle submission of poll responses
@@ -57,6 +59,26 @@ router.get('/:pollId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching poll responses:', error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
+
+// Route to check if the user has already voted on a poll
+router.get('/hasVoted/:userId/:pollId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const pollId = req.params.pollId;
+
+    // Check if the user has already voted on the specified poll
+    const existingResponse = await PollResponse.findOne({ userId, pollId: new ObjectId(pollId) });
+
+    // If an existing response is found, the user has already voted
+    const hasVoted = !!existingResponse;
+
+    // Respond with whether the user has voted or not
+    res.json({ hasVoted });
+  } catch (error) {
+    console.error("Error checking if user has voted:", error);
+    res.status(500).json({ error: 'Error checking if user has voted' });
   }
 });
 
