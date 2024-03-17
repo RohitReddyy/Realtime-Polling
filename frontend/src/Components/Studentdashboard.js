@@ -72,9 +72,16 @@ const StudentDashboard = () => {
     }
   };
 
+  const handleLogout = () => {
+    // Implement logout logic here, such as clearing local storage or session data
+    // Redirect to the main page
+    window.location.href = '/studentlogin';
+  };
+
   return (
     <div className="container">
       <h1 className="text-center mt-5">Student Dashboard</h1>
+      <button className="btn btn-outline-danger" onClick={handleLogout}>Logout</button>
       <div className="row justify-content-center mt-5">
         <div className="col-md-8">
           <h2>Available Polls</h2>

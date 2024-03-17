@@ -10,6 +10,13 @@ export default function TeacherDashboard() {
     setView(viewName);
   };
 
+  const handleLogout = () => {
+    // Implement logout logic here, such as clearing local storage or session data
+    // Redirect to the main page
+    window.location.href = '/teacherlogin';
+  };
+
+
   return (
     <div className={`container-fluid p-0`}>
       <nav className={`navbar navbar-expand-lg navbar-light bg-light mb-4`}>
@@ -31,6 +38,7 @@ export default function TeacherDashboard() {
                 <button className={`nav-link btn ${view === 'pollHistory' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => handleViewChange('pollHistory')}>Poll History</button>
               </li>
             </ul>
+            <button className="btn btn-outline-danger" onClick={handleLogout}>Logout</button>
           </div>
         </div>
       </nav>

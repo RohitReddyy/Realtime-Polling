@@ -26,7 +26,7 @@ module.exports = (io) => {
   router.get('/', async (_req, res) => {
     try {
       // Fetch all polls from the database
-      const polls = await Poll.find();
+      const polls = await Poll.find({ isActive: true });
       res.json({ polls });
     } catch (error) {
       console.error("Error fetching polls:", error);
@@ -49,12 +49,12 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-  router.get('/history/:userId', async (req, res) => {
+  router.get('/history/active/:userId', async (req, res) => {
     try {
       const userId = req.params.userId;
 
       // Fetch polls created by the specified user
-      const userPolls = await Poll.find({ userId });
+      const userPolls = await Poll.find({ userId, isActive: true });
 
       // Respond with the user's polls
       res.json({ userPolls });
@@ -63,6 +63,76 @@ router.get('/:id', async (req, res) => {
       res.status(500).json({ error: "Error fetching user's polls" });
     }
   });
+
+  router.get('/history/deactive/:userId', async (req, res) => {
+    try {
+      const userId = req.params.userId;
+
+      // Fetch polls created by the specified user
+      const userPolls = await Poll.find({ userId, isActive: false });
+
+      // Respond with the user's polls
+      res.json({ userPolls });
+    } catch (error) {
+      console.error("Error fetching user's polls:", error);
+      res.status(500).json({ error: "Error fetching user's polls" });
+    }
+  });
+
+  router.put('/end/:pollId', async (req, res) => {
+    try {
+      const pollId = req.params.pollId;
+  
+      // Update the isActive status of the poll to false
+      const updatedPoll = await Poll.findByIdAndUpdate(pollId, { isActive: false }, { new: true });
+  
+      if (!updatedPoll) {
+        console.error('Poll not found');
+        return res.status(404).json({ error: 'Poll not found' });
+      }
+  
+      // Respond with the updated poll
+      res.json({ updatedPoll });
+    } catch (error) {
+      console.error('Error ending polling:', error);
+      res.status(500).json({ error: 'Error ending polling' });
+    }
+  });
+
+  router.put('/reopen/:pollId', async (req, res) => {
+    try {
+      const pollId = req.params.pollId;
+  
+      // Update the isActive status of the poll to true
+      const updatedPoll = await Poll.findByIdAndUpdate(pollId, { isActive: true }, { new: true });
+  
+      if (!updatedPoll) {
+        console.error('Poll not found');
+        return res.status(404).json({ error: 'Poll not found' });
+      }
+  
+      // Respond with the updated poll
+      res.json({ updatedPoll });
+    } catch (error) {
+      console.error('Error reopening polling:', error);
+      res.status(500).json({ error: 'Error reopening polling' });
+    }
+  });
+
+  router.delete('/:pollId', async (req, res) => {
+    try {
+      const pollId = req.params.pollId;
+  
+      // Find the poll by ID and delete it
+      await Poll.findByIdAndDelete(pollId);
+  
+      res.json({ message: 'Poll deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting poll:', error);
+      res.status(500).json({ error: 'Error deleting poll' });
+    }
+  });
+  
 
   return router;
 };
