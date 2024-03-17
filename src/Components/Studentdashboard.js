@@ -12,32 +12,6 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
 
-  const handleOptionSelect = (pollId, option) => {
-    setSelectedOption((prevSelectedOption) => ({
-      ...prevSelectedOption,
-      [pollId]: option,
-    }));
-  };
-
-  // Function to clear vote for a specific poll
-  const clearVote = (pollId) => {
-    setSelectedOption((prevSelectedOption) => ({
-      ...prevSelectedOption,
-      [pollId]: null,
-    }));
-  };
-
-  // Function to check if an option is selected for a specific poll
-  const isOptionSelected = (pollId, option) => {
-    return selectedOption[pollId] === option;
-  };
-
-  // Function to check if the submit button should be enabled for a specific poll
-  const isSubmitEnabled = (pollId) => {
-    return !!selectedOption[pollId];
-  };
-
-
   useEffect(() => {
     const fetchPolls = async () => {
       try {
@@ -86,6 +60,9 @@ const StudentDashboard = () => {
     }
   };
 
+  const clearVote = () => {
+    setSelectedOption(null);
+  };
 
   const viewResults = async (pollId) => {
     try {
@@ -107,7 +84,7 @@ const StudentDashboard = () => {
             <div className="mx-0 mx-sm-auto">
               {polls.map((poll) => (
                 <div key={poll._id} className="card mb-3">
-                  <div className="card-body">
+                  <div className="card-body" >
                     <div className="text-center" onClick={() => viewResults(poll._id)} style={{cursor: "pointer"}}>
                       <i className="far fa-file-alt fa-4x mb-3 text-primary"></i>
                       <p>
@@ -126,8 +103,8 @@ const StudentDashboard = () => {
                           name={`poll-${poll._id}-${idx}`} 
                           id={`radio${poll._id}-${idx + 1}`} 
                           value={option}
-                          onChange={() => handleOptionSelect(poll._id, option)}
-                          checked={isOptionSelected(poll._id, option)}
+                          onChange={() => setSelectedOption(option)}
+                          checked={selectedOption === option}
                         />
                         <label className="custom-radio-label" htmlFor={`radio${poll._id}-${idx + 1}`}>{/* Update the htmlFor attribute */}
                           <div className="custom-radio-button"></div>
@@ -147,15 +124,15 @@ const StudentDashboard = () => {
                     <button
                       type="button"
                       className="btn btn-secondary me-2"
-                      onClick={() => clearVote(poll._id)}
+                      onClick={clearVote}
                     >
                       Clear Vote
                     </button>
                     <button
                       type="button"
                       className="btn btn-primary me-2"
-                      onClick={() => submitPollResponse(poll._id, selectedOption[poll._id])}
-                      disabled={!isSubmitEnabled(poll._id)}
+                      onClick={() => submitPollResponse(poll._id, selectedOption)}
+                      disabled={!selectedOption}
                     >
                       Submit
                     </button>
