@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './CreatePoll.css';
 
 const PollHistory = () => {
   const [polls, setPolls] = useState([]);
@@ -47,7 +48,7 @@ const PollHistory = () => {
   };
 
   return (
-    <div>
+    <div className="poll-history-container">
       <h2 className="mb-4">Poll History</h2>
       {polls.length === 0 ? (
         <p>No previous polls available.</p>
@@ -55,8 +56,8 @@ const PollHistory = () => {
         <div className="row row-cols-1">
           {polls.map((poll) => (
             <div className="col mb-4" key={poll._id}>
-              <div className="card w-100">
-                <div className="card-body" style={{ cursor: "pointer" }} onClick={() => handlePollClick(poll._id)}>
+              <div className="card w-100" onClick={() => handlePollClick(poll._id)}>
+                <div className="card-body">
                   <h5 className="card-title">{poll.question}</h5>
                   <ul className="list-group">
                     {poll.options?.map((option, index) => (
@@ -72,8 +73,10 @@ const PollHistory = () => {
                       </li>
                     ))}
                   </ul>
+                </div>
+                <div className="card-footer">
                   {/* Pass the poll ID to fetchPollPercentages */}
-                  <button className="btn btn-primary btn-sm" onClick={(e) => { e.stopPropagation(); fetchPollPercentages(poll._id) }} style={{ marginTop: "4px" }}>View Percentages</button>
+                  <button className="btn btn-primary btn-sm" onClick={(e) => { e.stopPropagation(); fetchPollPercentages(poll._id) }}>View Percentages</button>
                 </div>
               </div>
             </div>
