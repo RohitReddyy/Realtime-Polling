@@ -27,7 +27,8 @@ export default function CreatePoll({ onCreatePoll }) {
     const pollData = {
       question,
       options: options.filter(option => option.trim() !== ''),
-      userId: userId
+      userId: userId,
+      isActive: true
     };
 
     try {

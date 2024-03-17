@@ -12,6 +12,10 @@ const pollSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
+  },
+  isActive: {
+    type: Boolean,
+    required: true
   }
 });
 

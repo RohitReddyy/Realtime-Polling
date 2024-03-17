@@ -6,10 +6,10 @@ module.exports = (io) => {
   // POST route to create a new poll
   router.post('/', async (req, res) => {
     try {
-      const { question, options, userId } = req.body;
+      const { question, options, userId, isActive } = req.body;
       
       // Create the poll
-      const poll = await Poll.create({ question, options, userId });
+      const poll = await Poll.create({ question, options, userId, isActive });
       
       // Emit the newly created poll to all connected clients
       io.emit('newPoll', poll);
