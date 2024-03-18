@@ -9,6 +9,7 @@ const CommentPage = () => {
   const [socket, setSocket] = useState(null);
   const [poll, setPoll] = useState(null);
 
+
   useEffect(() => {
     const newSocket = io('http://localhost:5000');
     setSocket(newSocket);
