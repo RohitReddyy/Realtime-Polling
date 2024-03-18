@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './CreatePoll.css';
 
 const PollHistory = () => {
   const [polls, setPolls] = useState([]);
@@ -85,7 +86,7 @@ const PollHistory = () => {
   };
 
   return (
-    <div>
+    <div className="poll-history-container">
       <h2 className="mb-4">Poll History</h2>
       {polls.length === 0 ? (
         <p>No previous polls available.</p>
