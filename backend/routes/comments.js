@@ -32,7 +32,7 @@ module.exports = (io) => {
       const pollId = req.params.pollId;
       
       // Query the database for poll responses with the given poll ID
-      const responses = await PollResponse.find({ pollId });
+      const responses = await Comment.find({ pollId });
       
       // Return the responses as JSON
       res.status(200).json({ success: true, data: responses });
