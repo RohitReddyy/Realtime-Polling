@@ -55,7 +55,7 @@ function TeacherRegister() {
 
     return (
         <div className="container-fluid text-center py-5 background-gradient d-flex justify-content-center align-items-center">
-            <div className="card login-card">
+            <div className="card login-card" style={{width:"600px"}}>
                 <div className="card-body">
                     <h2 className="mb-4 text-blue">Teacher Registration</h2>
                     <form className="d-flex flex-column my-5" onSubmit={handleSubmit}>

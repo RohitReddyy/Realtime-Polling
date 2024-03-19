@@ -1,0 +1,27 @@
+.card1 {
+    width: 800px;
+  }
+  
+  .card-body1 {
+    padding: 2rem;
+  }
+
+  .App {
+    background: linear-gradient(135deg, #0056b3, #00b39f);
+    animation: gradientAnimation 10s ease infinite alternate;
+    min-height: 100vh;
+  }
+  
+  .form-control1 {
+    width: 100%;
+  }
+  
+  .forgot-password {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .register-link {
+    color: #007bff;
+  }
+  

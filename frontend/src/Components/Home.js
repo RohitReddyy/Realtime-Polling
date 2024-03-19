@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaChalkboardTeacher, FaUserGraduate } from 'react-icons/fa';
-import './Home.css'; // Import CSS file for additional styles
+import './Home.css'; 
 
 export default function Home() {
   return (

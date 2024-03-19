@@ -23,7 +23,7 @@ export default function TeacherDashboard() {
     <div className="teacher-dashboard">
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
         <div className="container">
-          <a className="navbar-brand" href="#">
+          <a className="navbar-brand" href="/Teacherdashboard">
             Teacher Dashboard
           </a>
           <button
