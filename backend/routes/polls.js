@@ -34,6 +34,17 @@ module.exports = (io) => {
     }
   });
 
+  router.get('/deactive', async (_req, res) => {
+    try {
+      // Fetch all polls from the database
+      const polls = await Poll.find({ isActive: false });
+      res.json({ polls });
+    } catch (error) {
+      console.error("Error fetching polls:", error);
+      res.status(500).json({ error: 'Error fetching polls' });
+    }
+  });
+
   // Route to fetch a single poll by its ID
 router.get('/:id', async (req, res) => {
   try {

@@ -82,5 +82,23 @@ router.get('/hasVoted/:userId/:pollId', async (req, res) => {
   }
 });
 
+router.get('/fetchpoll/:userId/:pollId', async (req, res) => {
+  try {
+    const { userId, pollId } = req.params;
+    
+    // Find the poll response for the given user and poll ID
+    const pollResponse = await PollResponse.findOne({ userId, pollId });
+    
+    if (!pollResponse) {
+      return res.status(404).json({ message: 'Poll response not found' });
+    }
+
+    // Send the selected option for the poll
+    res.json({ selectedOption: pollResponse.selectedOption });
+  } catch (error) {
+    console.error('Error fetching poll response:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 module.exports = router;
