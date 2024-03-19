@@ -9,6 +9,8 @@ import TeacherDashboard from './Components/Teacherdashboard';
 import StudentDashboard from './Components/Studentdashboard';
 import PollPage from './Components/PollPage';
 import CommentPage from './Components/CommentPage';
+import PastPolls from './Components/PastPolls';
+import PastComment from './Components/PastComment';
 
 import { useEffect } from 'react';
 import io from 'socket.io-client';
@@ -34,6 +36,8 @@ function App() {
           <Route path="/studentdashboard" element={<StudentDashboard />} />
           <Route path="/poll/:pollId" element={<PollPage />} />
           <Route path="/comment/:pollId" element={<CommentPage />} />
+          <Route path="/pastcomment/:pollId" element={<PastComment />} />
+          <Route path="/pastpolls" element={<PastPolls />} />
         </Routes>
       </Router>
     </div>

@@ -12,6 +12,7 @@ const CommentPage = () => {
   const [percentages, setPercentages] = useState([]);
   const [showColumns, setShowColumns] = useState(false);
   const [votesData, setVotesData] = useState({});
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     const newSocket = io('http://localhost:5000');
@@ -24,9 +25,9 @@ const CommentPage = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on('newComment', ({ pollId: commentPollId, comment }) => {
+      socket.on('newComment', ({ pollId: commentPollId, comment, userId }) => {
         if (commentPollId === pollId) {
-          setComments((prevComments) => [...prevComments, comment]);
+          setComments((prevComments) => [...prevComments, comment, userId]);
         }
       });
 
@@ -80,7 +81,7 @@ const CommentPage = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ pollId, comment: newComment })
+        body: JSON.stringify({ pollId, comment: newComment, userId })
       });
       
       if (response.ok) {
@@ -218,7 +219,7 @@ const CommentPage = () => {
               <h5 className="card-title">Comments</h5>
               <ul className="list-group list-group-flush">
                 {comments.map((comment, idx) => (
-                  <li key={idx} className="list-group-item">{comment.comment}</li>  
+                  <li key={idx} className="list-group-item">{comment.userId}: {comment.comment}</li>
                 ))}
               </ul>
             </div>

@@ -6,17 +6,18 @@ module.exports = (io) => {
   // POST route to handle posting comments
   router.post('/', async (req, res) => {
     try {
-      const { pollId, comment } = req.body;
+      const { pollId, comment, userId } = req.body;
 
       const newComment = new Comment({
         pollId,
-        comment
+        comment,
+        userId
       });
 
       await newComment.save();
 
       // Emit the new comment to connected clients
-      io.emit('newComment', { pollId, comment });
+      io.emit('newComment', { pollId, comment, userId });
 
       // Optionally, you can save the comment to your database
 
