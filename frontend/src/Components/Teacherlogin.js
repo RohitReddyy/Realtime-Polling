@@ -20,7 +20,7 @@ function TeacherLogin() {
 
         if (json.success) {
             localStorage.setItem('token', json.authtoken);
-            localStorage.setItem('userId', json.data.user.id);
+           localStorage.setItem('userId', json.data.user.id);
             window.location.href = '/Teacherdashboard';
             alert("success")
         } else {

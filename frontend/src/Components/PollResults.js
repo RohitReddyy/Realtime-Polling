@@ -67,6 +67,17 @@ const PollResults = () => {
     navigate(`/poll/${pollId}`);
   };
 
+  const arrayBufferToBase64 = (buffer) => {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+};
+
+
   return (
     <div>
       <h2 className="mb-4">Poll History</h2>
@@ -95,14 +106,22 @@ const PollResults = () => {
                       </li>
                     ))}
                   </ul>
+                  {poll.qrCode && (
+                        <div>
+                            <h2>QR Code:</h2>
+                            <img src={`data:image/png;base64,${arrayBufferToBase64(poll.qrCode.data)}`} alt="QR Code" />
+                        </div>
+                    )}
                   {/* Pass the poll ID to fetchPollPercentages */}
                   <button className="btn btn-primary btn-sm" onClick={() => {endPolling(poll._id) }} style={{ marginTop: "9px", marginBottom: "-8px" }}>End Polling</button>
                   <button className="btn btn-success btn-sm" onClick={() => {handlePollClick(poll._id) }} style={{ marginTop: "9px", marginBottom: "-8px" }}>View Result</button>
                 </div>
               </div>
             </div>
+            
           ))}
         </div>
+        
       )}
     </div>
   );

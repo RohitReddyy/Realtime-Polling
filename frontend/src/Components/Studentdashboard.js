@@ -10,34 +10,58 @@ const StudentDashboard = () => {
   const [selectedPollId, setSelectedPollId] = useState(null); // State to track the currently selected poll ID
   const [pollResults, setPollResults] = useState(null);
   const [votedPolls, setVotedPolls] = useState([]); // State to store the IDs of polls the user has already voted on
+  const [hasVotedMap, setHasVotedMap] = useState({}); // Store whether user has voted for each poll
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleOptionSelect = (pollId, option) => {
+    setSelectedOptions({ ...selectedOptions, [pollId]: option });
+    setSelectedPollId(pollId);
+  };
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
 
-  useEffect(() => {
-    const fetchPolls = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/polls');
-        if (response.ok) {
-          const data = await response.json();
-          setPolls(data.polls);
-        } else {
-          console.error('Failed to fetch polls');
-        }
-      } catch (error) {
-        console.error('Error fetching polls:', error);
+// useEffect to fetch polls and user's previous responses
+useEffect(() => {
+  const fetchPollsAndResponses = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const response = await fetch('http://localhost:5000/api/polls');
+      if (response.ok) {
+        const data = await response.json();
+        const fetchedPolls = data.polls;
+
+        const responsePromises = fetchedPolls.map(async (poll) => {
+          const pollResponse = await fetch(`http://localhost:5000/api/pollResponses/fetchpoll/${userId}/${poll._id}`);
+          if (pollResponse.ok) {
+            const responseData = await pollResponse.json();
+            if (responseData.selectedOption) {
+              return { ...poll, selectedOption: responseData.selectedOption };
+            }
+          }
+          return poll; // Return the unmodified poll object if no response is found
+        });
+
+        const updatedPolls = await Promise.all(responsePromises);
+        setPolls(updatedPolls);
+
+        // Populate selectedOptions based on fetched data
+        const initialSelectedOptions = {};
+        updatedPolls.forEach((poll) => {
+          if (poll.selectedOption) {
+            initialSelectedOptions[poll._id] = poll.selectedOption;
+          }
+        });
+        setSelectedOptions(initialSelectedOptions);
+      } else {
+        console.error('Failed to fetch polls');
       }
-    };
+    } catch (error) {
+      console.error('Error fetching polls and responses:', error);
+    }
+  };
 
-    fetchPolls();
-
-    socket.on('newPoll', (poll) => {
-      setPolls((prevPolls) => [...prevPolls, poll]);
-    });
-
-    return () => {
-      socket.off('newPoll');
-    };
-  }, []);
+  fetchPollsAndResponses();
+}, []);
 
   const submitPollResponse = async (pollId, selectedOption) => {
     try {
@@ -81,26 +105,77 @@ const StudentDashboard = () => {
   };
 
 
-  return (
-    <>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container-fluid">
-          <Link className="navbar-brand" to="/">Student Dashboard</Link>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <Link className="nav-link" to="/studentdashboard">Current Polls</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/pastpolls">Past Polls</Link>
-              </li>
-            </ul>
-            <form className="d-flex">
-              <Link className="btn btn-outline-danger" to="/">Logout</Link>
-            </form>
-          </div>
+
+ // useEffect to check if user has voted for each poll
+ useEffect(() => {
+  const checkHasVoted = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const promises = polls.map(async (poll) => {
+        const response = await fetch(`http://localhost:5000/api/pollResponses/hasVoted/${userId}/${poll._id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setHasVotedMap((prevMap) => ({ ...prevMap, [poll._id]: data.hasVoted }));
+          console.log(`User has voted for poll ${poll._id}: ${data.hasVoted}`);
+        } else {
+          console.error(`Failed to check if user has voted for poll ${poll._id}`);
+        }
+      });
+      await Promise.all(promises);
+    } catch (error) {
+      console.error('Error checking if user has voted:', error);
+    }
+  };
+
+  // Call checkHasVoted
+  checkHasVoted();
+}, [polls]);
+
+
+
+useEffect(() => {
+  // Check if userId exists in localStorage
+  const userId = localStorage.getItem('userId');
+  if (userId) {
+      // User is logged in, allow access
+      setIsLoggedIn(true);
+  } else {
+      // User is not logged in, redirect to login page
+window.location.href = '/studentlogin';      }
+}, []);
+
+// If user is not logged in, render nothing or a message
+if (!isLoggedIn) {
+  return null;
+}
+
+
+
+
+
+
+
+
+return (
+  <>
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <div className="container-fluid">
+        <Link className="navbar-brand" to="/">Student Dashboard</Link>
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+            <li className="nav-item">
+              <Link className="nav-link" to="/studentdashboard">Current Polls</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/pastpolls">Past Polls</Link>
+            </li>
+          </ul>
+          <form className="d-flex">
+            <Link className="btn btn-outline-danger" to="/">Logout</Link>
+          </form>
         </div>
-      </nav>
+      </div>
+    </nav>
 
     <div className="container">
       <h1 className="text-center mt-5">Current Polls</h1>
@@ -116,7 +191,7 @@ const StudentDashboard = () => {
                   <div className="card-body">
                     <div className="text-center" onClick={() => viewResults(poll._id)} style={{ cursor: "pointer" }}>
                       <i className="far fa-file-alt fa-4x mb-3 text-primary"></i>
-                      <p>
+                       <p>
                         <strong>{poll.question}</strong>
                       </p>
                     </div>
@@ -132,18 +207,15 @@ const StudentDashboard = () => {
                             name={`poll-${poll._id}-${idx}`}
                             id={`radio${poll._id}-${idx + 1}`}
                             value={option}
-                            onChange={() => {
-                              setSelectedOptions({ ...selectedOptions, [poll._id]: option });
-                              setSelectedPollId(poll._id); // Update the selected poll ID when an option is selected
-                            }}
+                            onChange={() => handleOptionSelect(poll._id, option)}
                             checked={selectedOptions[poll._id] === option}
+                            disabled={hasVotedMap[poll._id]} // Disable if user has voted
                           />
                           <label className="custom-radio-label" htmlFor={`radio${poll._id}-${idx + 1}`}>
                             <div className="custom-radio-button"></div>
                             <span className="custom-radio-option">{option}</span>
-                            {pollResults && pollResults.percentages[option] && (
-                              <span className="custom-radio-percent">({pollResults.percentages[option]}%)</span>
-                            )}
+                            {/* Display the user's selected option */}
+                          
                           </label>
                         </div>
                       ))}
@@ -170,8 +242,7 @@ const StudentDashboard = () => {
                       type="button"
                       className="btn btn-info"
                       onClick={() => viewResults(poll._id)}
-                      disabled={selectedPollId !== poll._id}
-                    >
+                      >
                       Comment
                     </button>
                   </div>
@@ -200,8 +271,9 @@ const StudentDashboard = () => {
         </div>
       )}
     </div>
-    </>
-  );
+  </>
+);
 };
+
 
 export default StudentDashboard;

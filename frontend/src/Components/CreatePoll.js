@@ -45,6 +45,8 @@ export default function CreatePoll({ onCreatePoll }) {
       if (response.ok) {
         const data = await response.json();
         alert("Successfully created poll");
+        window.location.href = '/Teacherdashboard#pollResults';
+
         onCreatePoll(data.polls.id);
         formRef.current.reset(); // Reset the form fields
       } else {

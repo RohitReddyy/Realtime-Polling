@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Poll = require('../models/Polls');
+const QRCode = require('qrcode');
 
 module.exports = (io) => {
   // POST route to create a new poll
@@ -10,10 +11,24 @@ module.exports = (io) => {
       
       // Create the poll
       const poll = await Poll.create({ question, options, userId, isActive });
-      
+  
+      // Generate QR code for poll ID
+      const pollURL = `http://localhost:3000/singlepoll/${poll.id}`;
+      const qrCodeDataURL = await QRCode.toDataURL(pollURL);
+      // const qrCodeData = JSON.stringify({ pollId: poll.id });
+      // const qrCodeDataURL = await QRCode.toDataURL(qrCodeData);
+  
+      // Convert the QR code Data URL to Base64
+      const base64QRCode = qrCodeDataURL.split(',')[1]; // Remove the data prefix
+      const qrCodeBuffer = Buffer.from(base64QRCode, 'base64');
+  
+      // Store the QR code as Buffer in the database
+      poll.qrCode = qrCodeBuffer;
+      await poll.save();
+  
       // Emit the newly created poll to all connected clients
       io.emit('newPoll', poll);
-
+  
       // Respond with the ID of the created poll
       res.json({ polls: { id: poll.id } });
     } catch (error) {
@@ -22,6 +37,7 @@ module.exports = (io) => {
     }
   });
 
+  
   // GET route to fetch all polls
   router.get('/', async (_req, res) => {
     try {

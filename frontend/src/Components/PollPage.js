@@ -9,8 +9,7 @@ export default function PollPage() {
     const [percentages, setPercentages] = useState([]);
     const [showColumns, setShowColumns] = useState(false);
     const [votesData, setVotesData] = useState({});
-
-    // Fetch poll data
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     useEffect(() => {
         const fetchPollData = async () => {
             try {
@@ -20,13 +19,31 @@ export default function PollPage() {
                     throw new Error('Failed to fetch poll data');
                 }
                 const pollData = await pollResponse.json();
+
                 setPoll(pollData.poll);
+                console.log("sss",poll.question)
+
             } catch (error) {
                 console.error('Error fetching poll data:', error);
             }
         };
         fetchPollData();
     }, [pollId]);
+
+
+
+useEffect(() => {
+    // Check if userId exists in localStorage
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+        // User is logged in, allow access
+        setIsLoggedIn(true);
+    } else {
+        // User is not logged in, redirect to login page
+window.location.href = '/teacherlogin';      }
+}, []);
+
+
 
     // Fetch votes data for each option
     useEffect(() => {
@@ -85,6 +102,11 @@ export default function PollPage() {
         fetchPollPercentages();
     }, [pollId]);
 
+
+
+
+
+
     // Create bar chart once both poll data and percentages are fetched
     useEffect(() => {
         if (poll && percentages) {
@@ -135,6 +157,17 @@ export default function PollPage() {
             }
         });
     };
+
+     // Function to convert ArrayBuffer to Base64
+     const arrayBufferToBase64 = (buffer) => {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    };
     
     // Function to handle the "Visualise" button click
     const handleVisualiseClick = () => {
@@ -157,9 +190,18 @@ export default function PollPage() {
                                     <li key={index} className="list-group-item">{option}</li>
                                 ))}
                             </ul>
+                            {/* {poll.qrCode && (
+                        <div>
+                            <h2>QR Code:</h2>
+                            <img src={`data:image/png;base64,${arrayBufferToBase64(poll.qrCode.data)}`} alt="QR Code" />
+                        </div>
+                    )} */}
                         </div>
                     </div>
+                    
                 )}
+              
+        
             </div>
                 <button className='btn btn-primary mt-3' onClick={handleVisualiseClick} style={{position: "absolute", right: "20%", top: "78%"}}>Visualise</button>
             <div style={{ flex: 1 }}>

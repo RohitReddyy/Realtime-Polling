@@ -13,6 +13,7 @@ const PastComment = () => {
   const [showColumns, setShowColumns] = useState(false);
   const [votesData, setVotesData] = useState({});
   const userId = localStorage.getItem('userId');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const newSocket = io('http://localhost:5000');
@@ -21,6 +22,20 @@ const PastComment = () => {
     return () => {
       newSocket.disconnect();
     };
+  }, []);
+
+
+
+
+  useEffect(() => {
+      // Check if userId exists in localStorage
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+          // User is logged in, allow access
+          setIsLoggedIn(true);
+      } else {
+          // User is not logged in, redirect to login page
+window.location.href = '/studentlogin';      }
   }, []);
 
   useEffect(() => {

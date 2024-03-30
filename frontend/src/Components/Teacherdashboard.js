@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { FaPoll, FaChartBar, FaHistory } from 'react-icons/fa';
 import CreatePoll from './CreatePoll';
 import PollResults from './PollResults';
@@ -7,7 +7,18 @@ import './TeacherDashboard.css';
 
 export default function TeacherDashboard() {
   const [view, setView] = useState('createPoll');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  useEffect(() => {
+      // Check if userId exists in localStorage
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+          // User is logged in, allow access
+          setIsLoggedIn(true);
+      } else {
+          // User is not logged in, redirect to login page
+window.location.href = '/teacherlogin';      }
+  }, []);
   const handleViewChange = (viewName) => {
     setView(viewName);
   };
@@ -17,6 +28,23 @@ export default function TeacherDashboard() {
     // Redirect to the main page
     window.location.href = '/teacherlogin';
   };
+
+  useEffect(() => {
+    // Check if userId exists in localStorage
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+        // User is logged in, allow access
+        setIsLoggedIn(true);
+    } else {
+        // User is not logged in, redirect to login page
+window.location.href = '/teacherlogin';      }
+}, []);
+
+// If user is not logged in, render nothing or a message
+if (!isLoggedIn) {
+    return null;
+}
+
 
 
   return (

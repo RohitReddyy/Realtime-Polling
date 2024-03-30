@@ -16,8 +16,12 @@ const pollSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     required: true
+  },
+  qrCode: {
+    type: Buffer // Store the QR code as a Buffer
   }
 });
 
-const Polls = mongoose.model('polls', pollSchema);
-module.exports = Polls;
+const Poll = mongoose.model('Poll', pollSchema);
+
+module.exports = Poll;
