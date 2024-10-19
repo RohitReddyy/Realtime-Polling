@@ -16,7 +16,7 @@ function App() {
             return;
         }
     
-        const response = await fetch("http://localhost:5000/api/studentauth/createuser", {
+        const response = await fetch("https://realtime-polling-api.vercel.app/api/studentauth/createuser", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
