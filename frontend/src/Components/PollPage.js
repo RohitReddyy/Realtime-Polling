@@ -14,7 +14,7 @@ export default function PollPage() {
         const fetchPollData = async () => {
             try {
                 // Fetch poll data
-                const pollResponse = await fetch(`http://localhost:5000/api/polls/${pollId}`);
+                const pollResponse = await fetch(`https://realtime-polling-api.vercel.app/api/polls/${pollId}`);
                 if (!pollResponse.ok) {
                     throw new Error('Failed to fetch poll data');
                 }
@@ -49,7 +49,7 @@ window.location.href = '/teacherlogin';      }
     useEffect(() => {
         const fetchVotesData = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/pollResponses/${pollId}`);
+                const response = await fetch(`https://realtime-polling-api.vercel.app/api/pollResponses/${pollId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch votes data');
                 }
@@ -65,7 +65,7 @@ window.location.href = '/teacherlogin';      }
                 for (const option in formattedData) {
                     const userIds = formattedData[option];
                     const userNames = await Promise.all(userIds.map(async userId => {
-                        const userResponse = await fetch(`http://localhost:5000/api/studentauth/getusername/${userId}`);
+                        const userResponse = await fetch(`https://realtime-polling-api.vercel.app/api/studentauth/getusername/${userId}`);
                         if (userResponse.ok) {
                             const userData = await userResponse.json();
                             return userData.username;
@@ -89,7 +89,7 @@ window.location.href = '/teacherlogin';      }
         const fetchPollPercentages = async () => {
             try {
                 // Fetch poll percentages
-                const response = await fetch(`http://localhost:5000/api/pollResponses/${pollId}`);
+                const response = await fetch(`https://realtime-polling-api.vercel.app/api/pollResponses/${pollId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch poll percentages');
                 }
