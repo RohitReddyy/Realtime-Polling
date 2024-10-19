@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate,Link } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://realtime-polling-api.vercel.app/');
 
 const StudentDashboard = () => {
   const [polls, setPolls] = useState([]);
@@ -25,13 +25,13 @@ useEffect(() => {
   const fetchPollsAndResponses = async () => {
     try {
       const userId = localStorage.getItem('userId');
-      const response = await fetch('http://localhost:5000/api/polls');
+      const response = await fetch('https://realtime-polling-api.vercel.app/api/polls');
       if (response.ok) {
         const data = await response.json();
         const fetchedPolls = data.polls;
 
         const responsePromises = fetchedPolls.map(async (poll) => {
-          const pollResponse = await fetch(`http://localhost:5000/api/pollResponses/fetchpoll/${userId}/${poll._id}`);
+          const pollResponse = await fetch(`https://realtime-polling-api.vercel.app/api/pollResponses/fetchpoll/${userId}/${poll._id}`);
           if (pollResponse.ok) {
             const responseData = await pollResponse.json();
             if (responseData.selectedOption) {
@@ -70,7 +70,7 @@ useEffect(() => {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/pollResponses', {
+      const response = await fetch('https://realtime-polling-api.vercel.app/api/pollResponses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ useEffect(() => {
     try {
       const userId = localStorage.getItem('userId');
       const promises = polls.map(async (poll) => {
-        const response = await fetch(`http://localhost:5000/api/pollResponses/hasVoted/${userId}/${poll._id}`);
+        const response = await fetch(`https://realtime-polling-api.vercel.app/api/pollResponses/hasVoted/${userId}/${poll._id}`);
         if (response.ok) {
           const data = await response.json();
           setHasVotedMap((prevMap) => ({ ...prevMap, [poll._id]: data.hasVoted }));
