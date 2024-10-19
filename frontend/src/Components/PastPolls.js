@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://realtime-polling-api.vercel.app/');
 
 const StudentDashboard = () => {
   const [polls, setPolls] = useState([]);
@@ -17,7 +17,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     const fetchPolls = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/polls/deactive');
+        const response = await fetch('https://realtime-polling-api.vercel.app/api/polls/deactive');
         if (response.ok) {
           const data = await response.json();
           setPolls(data.polls);
@@ -25,12 +25,12 @@ const StudentDashboard = () => {
           // Fetch results for each poll
           let tempSelectedOptions = {};
           let promises = data.polls.forEach(async poll => {
-            const res = await fetch(`http://localhost:5000/api/polls/${poll._id}/results`);
+            const res = await fetch(`https://realtime-polling-api.vercel.app/api/polls/${poll._id}/results`);
             if (res.ok) {
               const pollData = await res.json();
               setPollResults(prevResults => ({ ...prevResults, [poll._id]: pollData }));
             }
-            const resSelectedOption = await fetch(`http://localhost:5000/api/pollResponses/fetchpoll/${userId}/${poll._id}`);
+            const resSelectedOption = await fetch(`https://realtime-polling-api.vercel.app/api/pollResponses/fetchpoll/${userId}/${poll._id}`);
             if (resSelectedOption.ok) {
               const dataSelectedOption = await resSelectedOption.json();
               tempSelectedOptions = { ...tempSelectedOptions, [poll._id]: dataSelectedOption.selectedOption };            }
